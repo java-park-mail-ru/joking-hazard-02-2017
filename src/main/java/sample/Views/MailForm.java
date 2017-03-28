@@ -5,11 +5,13 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 /**
  * Created by ksg on 18.03.17.
  */
-public final class StringContainer {
+
+// Changed name to merge pull request
+public final class MailForm {
     String strCont;
 
     @SuppressWarnings("unused")
-    public StringContainer(@JsonProperty("strCont") String strCont) {
+    public MailForm(@JsonProperty("strCont") String strCont) {
         this.strCont = strCont;
     }
 

@@ -3,7 +3,6 @@ package sample.Views;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import sample.Models.UserInfoModel;
 /**
  * Created by ksg on 17.03.17.
  */

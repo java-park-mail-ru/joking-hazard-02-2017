@@ -13,13 +13,15 @@ import javax.servlet.http.HttpSession;
 import javax.validation.constraints.NotNull;
 import java.util.Locale;
 
+@SuppressWarnings("Duplicates")
 //@CrossOrigin(origins = "https://jokinghazard.herokuapp.com")
 @RestController
 public class LogInController {
+    private final MessageSource messageSource;
+
     @SuppressWarnings("unused")
     @NotNull
     final AccountService accServ;
-    private final MessageSource messageSource;
 
     @SuppressWarnings("unused")
     public LogInController(@NotNull AccountService accountService, @NotNull MessageSource messageSource) {
@@ -29,41 +31,35 @@ public class LogInController {
 
     @RequestMapping(path = "/api/user/login", method = RequestMethod.POST, produces = "application/json", consumes = "application/json")
     public ResponseEntity<ResponseCode> getMsg(@RequestBody LogInData body, HttpSession httpSession) {
-        boolean resCode = false;
-        String msg =  messageSource.getMessage("msgs.error", null, Locale.ENGLISH);
-        LogInData.ViewError viewRes = body.valid();
-        if(viewRes !=  LogInData.ViewError.OK){
-            switch (viewRes){
-                case INVALID_DATA_ERROR:
-                    msg = messageSource.getMessage("msgs.invalid_auth_data", null, Locale.CANADA);
-                    //HA CANADA
-                    resCode = false;
-                    break;
-                default:
-                    msg = messageSource.getMessage("msgs.error", null, Locale.ENGLISH);
-                    resCode = false;
-            }
-            return new ResponseEntity<ResponseCode>(new ResponseCode(resCode,msg), HttpStatus.OK);
-        }
-        LogInModel body_model = new LogInModel(body.getUserLogin(), body.getPassHash());
+        Boolean resCode = true;
+        String msg = messageSource.getMessage("msgs.ok", null, Locale.ENGLISH);
+        HttpStatus status = HttpStatus.OK;
+
+        final LogInModel body_model = new LogInModel(body.getUserLogin(), body.getPassHash());
         final AccountService.ErrorCodes resp = accServ.login(body_model);
-        switch (resp){
-            case INVALID_LOGIN:
+
+        switch (resp) {
+
+            case INVALID_AUTH_DATA: {
+                msg = messageSource.getMessage("msgs.bad_request", null, Locale.ENGLISH);
                 resCode = false;
-                msg =  messageSource.getMessage("msgs.invalid_auth_data", null, Locale.ENGLISH);
+                status = HttpStatus.BAD_REQUEST;
                 break;
-            case INVALID_PASSWORD:
+            }
+
+            case INVALID_LOGIN: case INVALID_PASSWORD: {
                 resCode = false;
-                msg =  messageSource.getMessage("msgs.invalid_auth_data", null, Locale.ENGLISH);
+                msg = messageSource.getMessage("msgs.forbidden", null, Locale.ENGLISH);
+                status = HttpStatus.FORBIDDEN;
                 break;
-            case OK:
-                resCode = true;
-                msg =  messageSource.getMessage("msgs.ok", null, Locale.ENGLISH);
+            }
+
+            case OK: {
                 httpSession.setAttribute("userLogin", body.getUserLogin());
                 break;
-            default:
-
+            }
         }
-        return new ResponseEntity<ResponseCode>(new ResponseCode(resCode,msg), HttpStatus.OK);
+
+        return new ResponseEntity<ResponseCode>(new ResponseCode(resCode, msg), status);
     }
 }
