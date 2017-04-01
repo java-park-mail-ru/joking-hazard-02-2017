@@ -1,45 +1,10 @@
-# JTest
-## API DOCS
-#### Адрес
-<code>/api/user/signup</code>
-#### Запрос
-<code>{
-"pass": "111", 
-"userLogin":"211", 
-"userMail":"1@1.ru"
-}</code>
-#### Ответ
-<code>{"result": true,"errorMsg": "ok"}</code>
-#### Адрес 
-<code>/api/user/login</code>
-#### Запрос
-<code> {"pass": "111", "userLogin":"211"} </code>
-#### Ответ
-<code> {
-"result": false,
-"errorMsg": "Invalid login"
-} </code>
-#### Адрес 
-<code>/api/user/changeMail</code>
-#### Запрос
-<code> {"strCont":"1@2.ru"} </code>
-#### Ответ
-<code>{
-"result": true,
-"errorMsg": "ok"
-} </code>
-#### Адрес 
-<code>/api/user/changePass</code>
-#### Запрос
-<code> {"oldPass":"111", "newPass":"122"} </code>
-#### Ответ
-<code> {
-"result": false,
-"errorMsg": "Invalid password"
-}</code>
-#### Адрес 
-<code>/api/who_i_am</code>
-#### Ответ
-<code> {"userMail":"1@1.ru","userLogin":"111"}</code>
-#### Адрес 
-<code>/api/logout</code>
+# Joking Hazard
+**Суть игры заключается в сборке комикса несколькими игроками. Есть 4 игрока, каждому дается по 4 карточки и каждый ход выбирается ведущий. Роль ведущего в выборе карт, что скинули 3 других игрока, сам ведущий карту не скидывает. За 4 хода собирается простой и интересный комикс**
+
+###Состав команды:
+* [*Асриян Эдуар*](https://github.com/ed-asriyan), АПО-22, ИУ7-43
+* [*Балякин Данила*](https://github.com/Pacman29), АПО-22, ИУ7-62
+* [*Камакин Андрей*](https://github.com/lieroz), АПО-22, ИУ7-43
+* [*Крестов Сергей*](https://github.com/wolf1996), АПО-22, ИУ7-82
+
+### [Server API on Swagger](https://app.swaggerhub.com/api/lieroz/Joking-Hazard/1.0.0)

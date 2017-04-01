@@ -1,0 +1,282 @@
+swagger: '2.0'
+info:
+  description:
+    'This is a spec for server API by team Angry Beavers!'
+  version: 1.0.0
+  title: Joking-Hazard API
+# schemes:
+# - http
+paths:
+  /api/user/signup:
+    post:
+      tags:
+      - user
+      summary: Create user
+      description: Create user.
+      operationId: createUser
+      produces:
+      - application/json
+      parameters:
+      - in: body
+        name: body
+        description: User to be created
+        required: true
+        schema:
+          $ref: '#/definitions/UserCreateModel'
+      responses:
+        201:
+          description: successful operation
+          schema:
+            $ref: '#/definitions/Created'
+        409:
+          description: login occupied
+          schema:
+            $ref: '#/definitions/Conflict'
+        400:
+          description: null fields
+          schema:
+            $ref: '#/definitions/BadRequest'
+  /api/user/login:
+    post:
+      tags:
+      - user
+      summary: Logs user into the system
+      operationId: loginUser
+      produces:
+      - application/json
+      parameters:
+      - in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/UserLoginModel'
+      responses:
+        200:
+          description: successful operation
+          schema:
+            $ref: '#/definitions/Ok'
+        403:
+          description: invalid login/pass
+          schema:
+            $ref: '#/definitions/Forbidden'
+        400:
+          description: null fields
+          schema:
+            $ref: '#/definitions/BadRequest'
+  /api/user/data:
+    get:
+      tags:
+      - user
+      summary: Gets data about user.
+      operationId: getUserData
+      produces:
+      - application/json
+      parameters: []
+      responses:
+        200:
+          description: successful operation
+          schema:
+            $ref: '#/definitions/Ok'
+        403:
+          description: invalid login/pass
+          schema:
+            $ref: '#/definitions/Forbidden'
+        400:
+          description: null fields
+          schema:
+            $ref: '#/definitions/BadRequest'
+  /api/logout:
+    get:
+      tags:
+      - user
+      summary: Logout user.
+      operationId: logoutUser
+      produces:
+      - application/json
+      - application/xml
+      parameters: []
+      responses:
+        default:
+          description: successful operation
+  /api/user/changeMail:
+    post:
+      tags:
+      - user
+      summary: Gets data about user.
+      operationId: changeUserMail
+      produces:
+      - application/json
+      parameters:
+      - in: body
+        name: body
+        description: User to be created
+        required: true
+        schema:
+          $ref: '#/definitions/ChangeMailModel'
+      responses:
+        200:
+          description: successful operation
+          schema:
+            $ref: '#/definitions/Ok'
+        404:
+          description: login occupied
+          schema:
+            $ref: '#/definitions/NotFound'
+        400:
+          description: null fields
+          schema:
+            $ref: '#/definitions/BadRequest'
+  /api/user/changePass:
+    post:
+      tags:
+      - user
+      summary: Gets data about user.
+      operationId: changeUserPass
+      produces:
+      - application/json
+      parameters:
+      - in: body
+        name: body
+        description: User to be created
+        required: true
+        schema:
+          $ref: '#/definitions/ChangePassModel'
+      responses:
+        200:
+          description: successful operation
+          schema:
+            $ref: '#/definitions/Ok'
+        403:
+          description: invalid login/pass
+          schema:
+            $ref: '#/definitions/Forbidden'
+        404:
+          description: login occupied
+          schema:
+            $ref: '#/definitions/NotFound'
+        400:
+          description: null fields
+          schema:
+            $ref: '#/definitions/BadRequest'
+definitions:
+  UserCreateModel:
+    type: object
+    properties:
+      userMail:
+        type: string
+        format: unique
+      userLogin:
+        type: string
+        format: unique
+      pass:
+        type: string
+        format: password
+    xml:
+      name: UserCreateModel
+  UserLoginModel:
+    type: object
+    properties:
+      userLogin:
+        type: string
+        format: unique
+      pass:
+        type: string
+        format: password
+    xml:
+      name: UserLoginModel
+  ChangeMailModel:
+    type: object
+    properties:
+      userMail:
+        type: string
+        format: unique
+    xml:
+      name: UserLoginModel
+  ChangePassModel:
+    type: object
+    properties:
+      oldPass:
+        type: string
+        format: password
+      newPass:
+        type: string
+        format: password
+    xml:
+      name: UserLoginModel
+  Ok:
+    type: object
+    properties:
+      result:
+        type: boolean
+        example: true
+      errorMsg:
+        type: string
+        example: Ok! en
+      data:
+        type: string
+        example: null
+  Created:
+    type: object
+    properties:
+      result:
+        type: boolean
+        example: true
+      errorMsg:
+        type: string
+        example: User created successfully! en
+      data:
+        type: string
+        example: null
+  BadRequest:
+    type: object
+    properties:
+      result:
+        type: boolean
+        example: false
+      errorMsg:
+        type: string
+        example: Json contains null fields! en
+      data:
+        type: string
+        example: null
+  Forbidden:
+    type: object
+    properties:
+      result:
+        type: boolean
+        example: false
+      errorMsg:
+        type: string
+        example: Invalid authentication data! en
+      data:
+        type: string
+        example: null
+  NotFound:
+    type: object
+    properties:
+      result:
+        type: boolean
+        example: false
+      errorMsg:
+        type: string
+        example: Invalid session! en
+      data:
+        type: string
+        example: null
+  Conflict:
+    type: object
+    properties:
+      result:
+        type: boolean
+        example: false
+      errorMsg:
+        type: string
+        example: Login already occupied! en
+      data:
+        type: string
+        example: null
+host: virtserver.swaggerhub.com
+basePath: /lieroz/Joking-Hazard/1.0.0
+# Added by API Auto Mocking Plugin
+schemes:
+ - https

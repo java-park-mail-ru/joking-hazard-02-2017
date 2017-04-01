@@ -7,10 +7,10 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  * Created by ksg on 02.03.17.
  */
 public final class ResponseCode<T> {
-    final boolean result;
-    final String errorMsg;
-    final  T data;
-    @SuppressWarnings("unused")
+    private final boolean result;
+    private final String errorMsg;
+    private final T data;
+
     @JsonCreator
     public ResponseCode(@JsonProperty("result") boolean result,
                         @JsonProperty("errorMsg") String errorMsg,
@@ -20,7 +20,6 @@ public final class ResponseCode<T> {
         this.data = data;
     }
 
-    @SuppressWarnings("unused")
     @JsonCreator
     public ResponseCode(@JsonProperty("result") boolean result,
                         @JsonProperty("errorMsg") String errorMsg) {
@@ -38,6 +37,8 @@ public final class ResponseCode<T> {
     public String getErrorMsg() {
         return errorMsg;
     }
+
+    @SuppressWarnings("unused")
     public T getData() {
         return data;
     }

@@ -4,8 +4,8 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 public final class PassForm {
-    final String oldPassHash;
-    final String newPassHash;
+    private final String oldPassHash;
+    private final String newPassHash;
 
     @SuppressWarnings("unused")
     @JsonCreator
@@ -15,12 +15,10 @@ public final class PassForm {
         this.newPassHash = newPassHash;
     }
 
-    @SuppressWarnings("unused")
     public String getOldPassHash() {
         return oldPassHash;
     }
 
-    @SuppressWarnings("unused")
     public String getNewPassHash() {
         return newPassHash;
     }

@@ -10,11 +10,10 @@ import javax.validation.constraints.NotNull;
  * Created by ksg on 03.03.17.
  */
 public final class UserData {
-    final String userLogin;
-    String userMail;
-    String passHash;
+    private final String userLogin;
+    private String userMail;
+    private String passHash;
 
-    @SuppressWarnings("unused")
     @JsonCreator
     public UserData(@JsonProperty("userMail") String userMail,
                     @JsonProperty("userLogin") String userLogin,
@@ -24,7 +23,6 @@ public final class UserData {
         this.userMail = userMail;
     }
 
-    @SuppressWarnings("unused")
     public String getUserLogin() {
         return userLogin;
     }

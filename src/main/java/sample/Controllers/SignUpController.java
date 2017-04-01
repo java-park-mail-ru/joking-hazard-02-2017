@@ -2,6 +2,7 @@ package sample.Controllers;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.context.MessageSource;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import sample.Services.AccountService;
@@ -13,54 +14,53 @@ import javax.servlet.http.HttpSession;
 import javax.validation.constraints.NotNull;
 import java.util.Locale;
 
-
-//@CrossOrigin(origins = "https://jokinghazard.herokuapp.com")
+@SuppressWarnings("Duplicates")
+@CrossOrigin(origins = "https://jokinghazard.herokuapp.com")
 @RestController
 public class SignUpController {
-    private final MessageSource messageSource;
-    @SuppressWarnings("unused")
     @NotNull
-    final AccountService accServ;
+    private final MessageSource messageSource;
 
-    @SuppressWarnings("unused")
+    @NotNull
+    private final AccountService accountService;
+
     public SignUpController(@NotNull AccountService accountService, @NotNull MessageSource messageSource) {
         this.messageSource = messageSource;
-        this.accServ = accountService;
+        this.accountService = accountService;
     }
 
-    @RequestMapping(path = "/api/user/signup", method = RequestMethod.POST, produces = "application/json", consumes = "application/json")
+    @RequestMapping(path = "/api/user/signup", method = RequestMethod.POST,
+            produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ResponseCode> getMsg(@RequestBody UserDataView body, HttpSession httpSession) {
-        boolean resCode = false;
-        String msg =  messageSource.getMessage("msgs.error", null, Locale.ENGLISH);
-        UserDataView.ViewError viewRes = body.valid();
-        if(viewRes != UserDataView.ViewError.OK){
-            switch (viewRes){
-                case INVALID_DATA_ERROR:
-                    msg = messageSource.getMessage("msgs.invalid_auth_data", null, Locale.ENGLISH);
-                    resCode = false;
-                    break;
-                default:
-                    msg = messageSource.getMessage("msgs.error", null, Locale.ENGLISH);
-                    resCode = false;
+        final UserData body_model = new UserData(body.getUserMail(), body.getUserLogin(), body.getPass());
+        final AccountService.ErrorCodes result = accountService.register(body_model);
+
+        switch (result) {
+
+            case INVALID_REG_DATA: {
+                return new ResponseEntity<>(new ResponseCode(false,
+                        messageSource.getMessage("msgs.bad_request", null, Locale.ENGLISH)),
+                        HttpStatus.BAD_REQUEST);
             }
-            return new ResponseEntity<ResponseCode>(new ResponseCode(resCode,msg), HttpStatus.OK);
-        }
-        UserData body_model = new UserData(body.getUserMail(),body.getUserLogin(),body.getPass());
-        AccountService.ErrorCodes result = accServ.register(body_model);
-        switch (result){
-            case INVALID_LOGIN:
-                resCode = false;
-                msg =  messageSource.getMessage("msgs.invalid_auth_data", null, Locale.ENGLISH);
-                break;
-            case LOGIN_OCCUPIED:
-                resCode = false;
-                msg = messageSource.getMessage("msgs.login_occupied", null, Locale.ENGLISH);
-                break;
-            case OK:
-                resCode = true;
-                msg = messageSource.getMessage("msgs.ok", null, Locale.ENGLISH);
+
+            case LOGIN_OCCUPIED: {
+                return new ResponseEntity<>(new ResponseCode(false,
+                        messageSource.getMessage("msgs.conflict", null, Locale.ENGLISH)),
+                        HttpStatus.CONFLICT);
+            }
+
+            case OK: {
                 httpSession.setAttribute("userLogin", body.getUserLogin());
+                return new ResponseEntity<>(new ResponseCode(true,
+                        messageSource.getMessage("msgs.created", null, Locale.ENGLISH)),
+                        HttpStatus.CREATED);
+            }
+
+            default: {
+                return new ResponseEntity<>(new ResponseCode(false,
+                        messageSource.getMessage("msgs.internal_server_error", null, Locale.ENGLISH)),
+                        HttpStatus.INTERNAL_SERVER_ERROR);
+            }
         }
-        return new ResponseEntity<ResponseCode>(new ResponseCode(resCode,msg), HttpStatus.OK);
     }
 }
