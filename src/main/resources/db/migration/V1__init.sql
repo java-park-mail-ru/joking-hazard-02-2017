@@ -1,5 +1,6 @@
-create table if not exists users (
+CREATE TABLE IF NOT EXISTS users (
   login    VARCHAR(50) UNIQUE,
   email    VARCHAR(50) UNIQUE,
-  password VARCHAR(50)
+  password TEXT,
+  score    INTEGER DEFAULT 0
 );

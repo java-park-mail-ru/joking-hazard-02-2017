@@ -10,18 +10,19 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.autoconfigure.web.servlet.MockMvcPrint;
 import org.springframework.boot.test.context.SpringBootTest;
 import sample.Application;
-import sample.Models.UserData;
-import sample.Services.AccountService;
+import sample.Main.Models.UserData;
+import sample.Main.Services.AccountService;
 import tests.OrderedRunner;
 
-import static org.junit.Assert.*;
-
 import java.util.Locale;
+
+import static org.junit.Assert.assertSame;
 
 /**
  * Created by lieroz on 27.03.17.
  */
 
+@SuppressWarnings("DefaultFileTemplate")
 @SpringBootTest(classes = Application.class)
 @RunWith(OrderedRunner.class)
 @AutoConfigureMockMvc(print = MockMvcPrint.NONE)
@@ -66,7 +67,7 @@ public class TestRegistration {
                 null,
                 faker.name().username(),
                 faker.internet().password());
-        AccountService.ErrorCodes error = accountService.register(userData);
+        final AccountService.ErrorCodes error = accountService.register(userData);
         assertSame(error, AccountService.ErrorCodes.INVALID_REG_DATA);
     }
 
@@ -76,7 +77,7 @@ public class TestRegistration {
                 faker.internet().emailAddress(),
                 null,
                 faker.internet().password());
-        AccountService.ErrorCodes error = accountService.register(userData);
+        final AccountService.ErrorCodes error = accountService.register(userData);
         assertSame(error, AccountService.ErrorCodes.INVALID_REG_DATA);
     }
 
@@ -86,7 +87,7 @@ public class TestRegistration {
                 faker.internet().emailAddress(),
                 faker.name().username(),
                 null);
-        AccountService.ErrorCodes error = accountService.register(userData);
+        final AccountService.ErrorCodes error = accountService.register(userData);
         assertSame(error, AccountService.ErrorCodes.INVALID_REG_DATA);
     }
 }

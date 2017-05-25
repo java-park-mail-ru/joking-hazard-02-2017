@@ -8,3 +8,6 @@
 * [*Крестов Сергей*](https://github.com/wolf1996), АПО-22, ИУ7-82
 
 ### [Server API on Swagger](https://app.swaggerhub.com/api/lieroz/Joking-Hazard/1.0.0)
+
+### Lobby
+Ссылка болтается вебсокет находится на /lobby

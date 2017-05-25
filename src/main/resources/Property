@@ -1,0 +1,5 @@
+{
+  "numOfCardsInDeck": 50,
+  "defaultMaxNumber": 4,
+  "numberOfCardsInHand": 7
+}
