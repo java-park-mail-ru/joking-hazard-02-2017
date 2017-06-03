@@ -39,6 +39,9 @@ public class InitState extends GameState {
             case "UserConnected": {
                 return addUser(msg);
             }
+            case "UserExited": {
+                return exitUser(msg);
+            }
             default:
                 break;
         }

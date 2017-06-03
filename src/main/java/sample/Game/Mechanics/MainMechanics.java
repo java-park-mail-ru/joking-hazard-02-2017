@@ -12,6 +12,11 @@ import sample.Game.Messages.BaseMessageContainer;
 import sample.Game.Messages.ServerMessages.GameUserInfo;
 import sample.Game.Messages.ServerMessages.RoundInfo;
 import sample.Game.Messages.ServerMessages.ServerErrorMessage;
+import sample.Game.Messages.ServerMessages.ServerFinishedMessage;
+import sample.Game.Messages.SystemMessages.BaseSystemMessageContainer;
+import sample.Game.Messages.SystemMessages.ErrorMessage;
+import sample.Game.Messages.SystemMessages.UpdateScoreMessage;
+import sample.Game.Services.DatabaseWorker;
 import sample.Lobby.Views.LobbyGameView;
 import sample.Lobby.Views.UserGameView;
 import sample.ResourceManager.ResourceManager;
@@ -38,10 +43,12 @@ public class MainMechanics {
 
     private LobbyGameView view;
     private final GameContext context;
+    private final DatabaseWorker database;
 
-    public MainMechanics(ObjectMapper mapper) {
+    public MainMechanics(ObjectMapper mapper,DatabaseWorker database) {
         context = new GameContext();
         context.mapper = mapper;
+        this.database = database;
     }
 
     public ErrorCodes init(LobbyGameView view, ResourceManager manager) {
@@ -74,9 +81,45 @@ public class MainMechanics {
         return ErrorCodes.OK;
     }
 
+    public RoundInfo getRoundInfo(){
+        final Vector<GameUserInfo> resvect = new Vector<>();
+        for (Map.Entry<String, GameUserItem> entry : context.mp.entrySet()) {
+            final String userId = entry.getKey();
+            final GameUserItem user = entry.getValue();
+            resvect.add(new GameUserInfo(context.mapper, userId, false, user.getScore()));
+        }
+        return new RoundInfo(context.mapper, resvect, context.currentRound);
+    }
+
     public ErrorCodes handleMessage(BaseMessageContainer msg) {
         final GameState.ErrorCodes err = context.state.handle(msg);
         return errorHandler(err, msg.getUserId());
+    }
+
+    private ErrorCodes scoreUpdated(){
+        return  ErrorCodes.FINISHED;
+    }
+
+    private ErrorCodes error(){
+        ServerErrorMessage msg = new ServerErrorMessage(context.mapper, "Error of scoreUpdate");
+        for (Map.Entry<String, GameUserItem> entry : context.mp.entrySet()) {
+            final GameUserItem user = entry.getValue();
+            user.sendMessage(msg);
+        }
+        return ErrorCodes.FINISHED;
+    }
+
+    public ErrorCodes handleSystemMessage(BaseSystemMessageContainer msg) {
+        String type = msg.getMsg().getType();
+        switch (type){
+            case "ScoreUpdated":{
+                return this.scoreUpdated();
+            }
+            case "Error":{
+                return this.error();
+            }
+        }
+        return ErrorCodes.OK;
     }
 
     private ErrorCodes errorHandler(GameState.ErrorCodes err, String userId) {
@@ -110,8 +153,11 @@ public class MainMechanics {
                 return ErrorCodes.FINISHED;
             }
             case FINISHED: {
-                LOGGER.info("GameFinished \n");
-                return ErrorCodes.FINISHED;
+                LOGGER.info("GameFinished\n");
+                RoundInfo roundInfo = this.getRoundInfo();
+                UpdateScoreMessage msg = new UpdateScoreMessage(roundInfo);
+                this.database.getQue().add(msg);
+                return ErrorCodes.OK;
             }
         }
         return ErrorCodes.OK;
@@ -122,16 +168,12 @@ public class MainMechanics {
     }
 
     public void finishGame() {
-        final Vector<GameUserInfo> resvect = new Vector<>();
-        for (Map.Entry<String, GameUserItem> entry : context.mp.entrySet()) {
-            final String userId = entry.getKey();
-            final GameUserItem user = entry.getValue();
-            resvect.add(new GameUserInfo(context.mapper, userId, false, user.getScore()));
-        }
-        final RoundInfo msg = new RoundInfo(context.mapper, resvect, context.currentRound);
+        final RoundInfo msg = this.getRoundInfo();
+        final ServerFinishedMessage finmsg = new ServerFinishedMessage(context.mapper);
         for (Map.Entry<String, GameUserItem> entry : context.mp.entrySet()) {
             final GameUserItem user = entry.getValue();
             user.sendMessage(msg);
+            entry.getValue().sendMessage(finmsg);
         }
         for (Map.Entry<String, GameUserItem> entry : context.mp.entrySet()) {
             entry.getValue().close();

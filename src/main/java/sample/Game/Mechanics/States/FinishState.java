@@ -25,9 +25,7 @@ public class FinishState extends GameState {
     @Override
     public ErrorCodes transfer() {
         context.state = this;
-        final ServerFinishedMessage msg = new ServerFinishedMessage(context.mapper);
         for (Map.Entry<String, GameUserItem> entry : context.mp.entrySet()) {
-            entry.getValue().sendMessage(msg);
             entry.getValue().resetMessage();
         }
         return ErrorCodes.FINISHED;

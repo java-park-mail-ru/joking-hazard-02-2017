@@ -1,13 +1,15 @@
 package sample.Game.Mechanics.GameUser;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.ser.Serializers;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 import sample.Game.Messages.ServerMessages.BaseServerMessage;
 import sample.Game.Messages.ServerMessages.GetCardFromHand;
 import sample.Game.Messages.ServerMessages.GetCardFromTable;
 import sample.Game.Messages.ServerMessages.HandInfo;
+import sample.Lobby.Services.LobbyService;
 
 import java.io.IOException;
 
@@ -17,6 +19,7 @@ import java.io.IOException;
 @SuppressWarnings("DefaultFileTemplate")
 public class GameUser implements GameUserInterface {
     private final WebSocketSession session;
+    private static final Logger LOGGER = LoggerFactory.getLogger(LobbyService.class);
 
     public GameUser(WebSocketSession session) {
         this.session = session;
@@ -52,7 +55,7 @@ public class GameUser implements GameUserInterface {
         try {
             session.sendMessage(new TextMessage(msg.getJson()));
         } catch (IOException ignored) {
-
+            LOGGER.error("IOException", ignored);
         }
         return ErrorCodes.OK;
     }
@@ -62,7 +65,7 @@ public class GameUser implements GameUserInterface {
         try {
             session.close();
         } catch (IOException ignored) {
-
+            LOGGER.error("IOException", ignored);
         }
     }
 

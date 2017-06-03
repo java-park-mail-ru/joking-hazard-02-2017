@@ -15,7 +15,8 @@ import sample.Game.Messages.BaseGameMessage;
         property = "type")
 @JsonSubTypes({
         @Type(value = ChooseCardFromHand.class, name = "ChooseCardFromHand"),
-        @Type(value = ChooseCardFromTable.class, name = "ChooseCardFromTable")
+        @Type(value = ChooseCardFromTable.class, name = "ChooseCardFromTable"),
+        @Type(value = ChooseCardFromTable.class, name = "UserExit")
 })
 public class BaseUserMessage extends BaseGameMessage {
     @Override

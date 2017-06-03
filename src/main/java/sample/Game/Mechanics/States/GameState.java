@@ -57,14 +57,13 @@ public abstract class GameState {
         return ErrorCodes.OK;
     }
 
+    protected ErrorCodes exitUser(BaseMessageContainer msg){
+        return ErrorCodes.FINISHED;
+    }
+
     protected GameContext context;
 
     public abstract ErrorCodes handle(BaseMessageContainer msg);
 
     public abstract ErrorCodes transfer();
-
-    @SuppressWarnings({"EmptyMethod", "unused"})
-    public void notifyAll(@SuppressWarnings("unused") BaseServerMessage msg) {
-
-    }
 }

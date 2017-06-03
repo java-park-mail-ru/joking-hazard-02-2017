@@ -30,7 +30,7 @@ public class GameUserInfo extends BaseServerMessage {
     @JsonProperty(value = "isMaster")
     @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "isMaster")
     @JsonIdentityReference(alwaysAsId = true)
-    boolean getIsMaster() {
+    public boolean getIsMaster() {
         return isMaster;
     }
 
@@ -38,7 +38,7 @@ public class GameUserInfo extends BaseServerMessage {
     @JsonProperty(value = "userLogin")
     @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "userLogin")
     @JsonIdentityReference(alwaysAsId = true)
-    String getUserLogin() {
+    public String getUserLogin() {
         return userLogin;
     }
 
@@ -46,7 +46,7 @@ public class GameUserInfo extends BaseServerMessage {
     @JsonProperty(value = "score")
     @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "score")
     @JsonIdentityReference(alwaysAsId = true)
-    int getScore() {
+    public int getScore() {
         return score;
     }
 }

@@ -16,6 +16,7 @@ import sample.Main.DAO.AccountDAO;
 import sample.Main.Models.LogInModel;
 import sample.Main.Models.UserData;
 import sample.Main.Models.UserInfoModel;
+import sample.Main.Views.UserInfoView;
 import sample.Main.Views.UserScoreRankView;
 
 import java.util.List;
@@ -146,6 +147,21 @@ public class AccountService {
             final UserData data = accountDAO.getUserByLogin(login);
             model.setUserLogin(data.getUserLogin());
             model.setUserMail(data.getUserMail());
+        } catch (EmptyResultDataAccessException ex) {
+            return ErrorCodes.INVALID_LOGIN;
+        } catch (DataAccessException ex) {
+            return ErrorCodes.DATABASE_ERROR;
+        }
+        return ErrorCodes.OK;
+    }
+
+    public ErrorCodes getUserView(@NotNull String login, UserInfoView view) {
+        try {
+            final UserData data = accountDAO.getUserByLogin(login);
+            view.setId(data.getId());
+            view.setUserLogin(data.getUserLogin());
+            view.setUserMail(data.getUserMail());
+            view.setUserScore(data.getScore());
 
         } catch (EmptyResultDataAccessException ex) {
             return ErrorCodes.INVALID_LOGIN;
@@ -173,5 +189,16 @@ public class AccountService {
 
     public List<UserScoreRankView> getScoreBoard(@NotNull String login) {
         return accountDAO.getScoreBoard(login);
+    }
+
+    public ErrorCodes updateScore(@NotNull String login, @NotNull Integer score) {
+        try {
+            accountDAO.updateScore(login, score);
+        } catch (EmptyResultDataAccessException ex) {
+            return ErrorCodes.INVALID_SESSION;
+        } catch (DataAccessException ex) {
+            return ErrorCodes.DATABASE_ERROR;
+        }
+        return ErrorCodes.OK;
     }
 }

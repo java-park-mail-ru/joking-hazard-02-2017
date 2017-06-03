@@ -4,6 +4,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import sample.Game.Mechanics.MainMechanics;
 import sample.Game.Messages.BaseMessageContainer;
 import sample.Game.Messages.SystemMessages.BaseSystemMessage;
+import sample.Game.Messages.SystemMessages.BaseSystemMessageContainer;
+import sample.Lobby.Messages.BaseMessage;
 import sample.Lobby.Views.LobbyGameView;
 import sample.ResourceManager.ResourceManager;
 
@@ -43,12 +45,12 @@ public class ServerWorker implements Runnable{
     private final Map<Integer, MainMechanics> games;
     private final ServerManager master;
     private final ConcurrentLinkedQueue<BaseMessageContainer> messageQue;
-    private final ConcurrentLinkedQueue<BaseSystemMessage> systemQue;
+    private final ConcurrentLinkedQueue<BaseSystemMessageContainer> systemQue;
     ServerManager serverManager;
     ScheduledExecutorService executorService;
 
     public ServerWorker(ServerManager master, ConcurrentLinkedQueue<BaseMessageContainer> messageQueue,
-                        ConcurrentLinkedQueue<BaseSystemMessage> systemQue,
+                        ConcurrentLinkedQueue<BaseSystemMessageContainer> systemQue,
                         ScheduledExecutorService executorService) {
         manager = new ResourceManager();
         generator = new KeyGenerator();
@@ -64,7 +66,7 @@ public class ServerWorker implements Runnable{
         return messageQue;
     }
 
-    public ConcurrentLinkedQueue<BaseSystemMessage> getSystemQue(){
+    public ConcurrentLinkedQueue<BaseSystemMessageContainer> getSystemQue(){
         return systemQue;
     }
 
@@ -72,7 +74,7 @@ public class ServerWorker implements Runnable{
         games.remove(index);
     }
     public Integer createGame(LobbyGameView players) {
-        final MainMechanics game = new MainMechanics(mapper);
+        final MainMechanics game = new MainMechanics(mapper,this.master.getDatabase());
         final MainMechanics.ErrorCodes error = game.init(players, manager);
         //noinspection EnumSwitchStatementWhichMissesCases,SwitchStatementWithoutDefaultBranch
         switch (error) {
@@ -99,9 +101,16 @@ public class ServerWorker implements Runnable{
         }
     }
 
-    private void handleSystemMessage(BaseSystemMessage msg){
+    private void handleSystemMessage(BaseSystemMessageContainer container){
+        final Integer gameIndex = container.getIndex().getIndex();
+        final MainMechanics mechanics = games.get(gameIndex);
+        final MainMechanics.ErrorCodes err = mechanics.handleSystemMessage(container);
+        if (err == MainMechanics.ErrorCodes.FINISHED) {
+            master.deleteUsers(mechanics.getUsersView());
+            mechanics.finishGame();
+            deleteGame(gameIndex);
+        }
         return;
-
     }
 
     @Override

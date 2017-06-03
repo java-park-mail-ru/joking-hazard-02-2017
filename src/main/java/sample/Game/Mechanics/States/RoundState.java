@@ -27,11 +27,11 @@ public class RoundState extends GameState {
         TableInfo tblInf = new TableInfo(context.mapper, context.cards);
         for (Map.Entry<String, GameUserItem> entry : context.mp.entrySet()) {
             final GameUserItem user = entry.getValue();
+            user.resetMessage();
             if (!Objects.equals(user, context.master)) {
                 user.getCardFromHand();
             }
             user.sendMessage(tblInf);
-            user.resetMessage();
         }
         return ErrorCodes.OK;
     }
@@ -73,6 +73,9 @@ public class RoundState extends GameState {
             }
             case "UserConnected": {
                 return addUser(msg);
+            }
+            case "UserExited": {
+                return exitUser(msg);
             }
             default:
                 break;

@@ -66,10 +66,9 @@ public class ResourceManager {
 
             props = mapper.readValue(fl, Props.class);
         } catch (@SuppressWarnings("OverlyBroadCatchBlock") IOException e) {
-            e.printStackTrace();
-            LOGGER.error("can't read props", e);
+            LOGGER.error("IOException can't read props", e);
         } catch (Exception e) {
-            LOGGER.error("can't read props", e);
+            LOGGER.error("Exception can't read props", e);
         }
 
     }
@@ -77,7 +76,7 @@ public class ResourceManager {
     public CardDeck getCardDeck() {
         final List<GameCard> lst = new ArrayList<>();
         for (int i = 0; i < props.numOfCardsInDeck; i++) {
-            final GameCard card = new GameCard(i, (i % 7) == 0);
+            final GameCard card = new GameCard(i, false);
             lst.add(card);
         }
         return new CardDeck(lst);

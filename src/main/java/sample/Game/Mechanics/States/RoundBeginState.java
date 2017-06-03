@@ -7,6 +7,7 @@ import sample.Game.Mechanics.MainMechanics;
 import sample.Game.Messages.BaseGameMessage;
 import sample.Game.Messages.BaseMessageContainer;
 import sample.Game.Messages.ServerMessages.GameUserInfo;
+import sample.Game.Messages.ServerMessages.NewRoundMessage;
 import sample.Game.Messages.ServerMessages.RoundInfo;
 import sample.Game.Messages.ServerMessages.TableInfo;
 import sample.Game.Messages.UserMessages.ChooseCardFromHand;
@@ -45,7 +46,7 @@ public class RoundBeginState extends GameState {
         if (!card.getRed()) {
             context.cards[1] = card;
         } else {
-            context.cards[2] = card;
+            context.cards[0] = card;
         }
 
         final TableInfo tableInfoMsg = new TableInfo(context.mapper, context.cards);
@@ -57,10 +58,10 @@ public class RoundBeginState extends GameState {
     }
 
     private void addMasterCard(GameCard card) {
-        if (context.cards[2] == null) {
-            context.cards[2] = card;
-        } else {
+        if (context.cards[1] == null) {
             context.cards[1] = card;
+        } else {
+            context.cards[0] = card;
         }
     }
 
@@ -107,6 +108,9 @@ public class RoundBeginState extends GameState {
             case "ChooseCardFromHand": {
                 return chooseCardFromHand(msg);
             }
+            case "UserExited": {
+                return exitUser(msg);
+            }
             default:
                 break;
         }
@@ -123,6 +127,8 @@ public class RoundBeginState extends GameState {
             if (!user.reget(context.deck)) {
                 return ErrorCodes.SERVER_ERROR;
             }
+            final NewRoundMessage newRoundMessage = new NewRoundMessage(context.mapper);
+            user.sendMessage(newRoundMessage);
         }
         context.master = getMaster();
         if (context.master == null) {

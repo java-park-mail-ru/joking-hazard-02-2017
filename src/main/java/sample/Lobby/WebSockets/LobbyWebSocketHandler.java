@@ -1,7 +1,6 @@
 package sample.Lobby.WebSockets;
 
 
-import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -59,7 +58,7 @@ public class LobbyWebSocketHandler extends TextWebSocketHandler {
             try {
                 session.sendMessage(new TextMessage(text_msg));
             } catch (IOException ignored) {
-
+                LOGGER.error("IOException", ignored);
             }
         } else {
             handleMessage(userId, session, message);
@@ -77,6 +76,7 @@ public class LobbyWebSocketHandler extends TextWebSocketHandler {
             try {
                 session.sendMessage(new TextMessage(msg.getJson()));
             } catch (IOException ignored) {
+                LOGGER.error("IOException", ignored);
             }
             return;
         }
@@ -91,6 +91,7 @@ public class LobbyWebSocketHandler extends TextWebSocketHandler {
                 try {
                     session.sendMessage(new TextMessage(msg.getJson()));
                 } catch (IOException ignored) {
+                    LOGGER.error("IOException", ignored);
                 }
             }
 
@@ -106,6 +107,7 @@ public class LobbyWebSocketHandler extends TextWebSocketHandler {
                 try {
                     session.sendMessage(new TextMessage(msg.getJson()));
                 } catch (IOException ignored) {
+                    LOGGER.error("IOException", ignored);
                 }
                 break;
             }
